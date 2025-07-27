@@ -1,0 +1,204 @@
+{% extends "base.html" %}
+
+{% block title %}Lịch sử - Free Fire Buff Like Tool{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Header -->
+    <div class="text-center">
+        <h1 class="text-4xl font-bold text-gray-900 mb-4">📊 Lịch sử Buff Like</h1>
+        <p class="text-lg text-gray-600">Theo dõi tất cả các lần buff like đã thực hiện</p>
+    </div>
+
+    <!-- Stats Summary -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        <div class="bg-white rounded-lg shadow-md p-6 text-center">
+            <div class="text-2xl font-bold text-blue-600">{{ history|length }}</div>
+            <div class="text-sm text-gray-600">Tổng số lần buff</div>
+        </div>
+        <div class="bg-white rounded-lg shadow-md p-6 text-center">
+            <div class="text-2xl font-bold text-green-600">
+                {{ history|selectattr('status', 'equalto', 'Success')|list|length }}
+            </div>
+            <div class="text-sm text-gray-600">Buff thành công</div>
+        </div>
+        <div class="bg-white rounded-lg shadow-md p-6 text-center">
+            <div class="text-2xl font-bold text-red-600">
+                {{ history|selectattr('status', 'equalto', 'Error')|list|length }}
+            </div>
+            <div class="text-sm text-gray-600">Buff thất bại</div>
+        </div>
+    </div>
+
+    <!-- History Table -->
+    <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <h2 class="text-xl font-semibold text-gray-900">📋 Chi tiết lịch sử</h2>
+        </div>
+        
+        {% if history %}
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Thời gian
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            UID
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Key
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Trạng thái
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Likes
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Giới hạn còn lại
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Thông báo
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    {% for record in history %}
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {{ record.created_at.strftime('%d/%m/%Y %H:%M:%S') }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                            {{ record.uid }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            <span class="font-mono text-xs">{{ record.key[:10] }}...</span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            {% if 'Success' in record.status or 'true' in record.status|lower %}
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                    ✅ Thành công
+                                </span>
+                            {% elif 'Error' in record.status %}
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                    ❌ Lỗi
+                                </span>
+                            {% else %}
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                    ⚠️ {{ record.status }}
+                                </span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {% if record.likes_count > 0 %}
+                                <span class="font-semibold text-green-600">{{ record.likes_count }}</span>
+                            {% else %}
+                                <span class="text-gray-400">-</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {% if record.remaining_limit and record.remaining_limit != 'Unknown' %}
+                                <span class="font-mono">{{ record.remaining_limit }}</span>
+                            {% else %}
+                                <span class="text-gray-400">-</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4 text-sm text-gray-500">
+                            <div class="max-w-xs truncate" title="{{ record.message }}">
+                                {{ record.message[:50] }}{% if record.message|length > 50 %}...{% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="px-6 py-12 text-center">
+            <div class="text-gray-400 mb-4">
+                <svg class="mx-auto h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+            </div>
+            <h3 class="text-lg font-medium text-gray-900 mb-2">Chưa có lịch sử</h3>
+            <p class="text-gray-500">Chưa có lần buff nào được thực hiện. Hãy thử buff like ở trang chủ!</p>
+            <div class="mt-6">
+                <a href="/" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
+                    🚀 Buff Like Ngay
+                </a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Export Options -->
+    {% if history %}
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <h3 class="text-lg font-medium text-gray-900 mb-4">📤 Xuất dữ liệu</h3>
+        <div class="flex space-x-4">
+            <button onclick="exportToCSV()" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                📊 Xuất CSV
+            </button>
+            <button onclick="exportToJSON()" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                📄 Xuất JSON
+            </button>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+function exportToCSV() {
+    const table = document.querySelector('table');
+    const rows = Array.from(table.querySelectorAll('tr'));
+    
+    let csv = [];
+    rows.forEach(row => {
+        const cols = Array.from(row.querySelectorAll('td, th'));
+        const rowData = cols.map(col => {
+            let text = col.textContent.trim();
+            // Escape quotes and wrap in quotes if contains comma
+            if (text.includes(',') || text.includes('"')) {
+                text = '"' + text.replace(/"/g, '""') + '"';
+            }
+            return text;
+        });
+        csv.push(rowData.join(','));
+    });
+    
+    const csvContent = csv.join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'buff_history.csv';
+    link.click();
+}
+
+function exportToJSON() {
+    const table = document.querySelector('table');
+    const rows = Array.from(table.querySelectorAll('tbody tr'));
+    
+    const data = rows.map(row => {
+        const cols = Array.from(row.querySelectorAll('td'));
+        return {
+            time: cols[0]?.textContent.trim(),
+            uid: cols[1]?.textContent.trim(),
+            key: cols[2]?.textContent.trim(),
+            status: cols[3]?.textContent.trim(),
+            likes: cols[4]?.textContent.trim(),
+            remaining_limit: cols[5]?.textContent.trim(),
+            message: cols[6]?.textContent.trim()
+        };
+    });
+    
+    const jsonContent = JSON.stringify(data, null, 2);
+    const blob = new Blob([jsonContent], { type: 'application/json;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'buff_history.json';
+    link.click();
+}
+</script>
+{% endblock %} 

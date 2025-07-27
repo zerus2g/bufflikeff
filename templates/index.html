@@ -1,0 +1,247 @@
+{% extends "base.html" %}
+
+{% block title %}Trang chủ - Free Fire Buff Like Tool{% endblock %}
+
+{% block content %}
+<div x-data="buffLikeApp()" class="space-y-6">
+    <!-- Header -->
+    <div class="text-center">
+        <h1 class="text-4xl font-bold text-gray-900 mb-4">🔥 Buff Like Free Fire</h1>
+        <p class="text-lg text-gray-600">Tự động hóa buff like cho tài khoản Free Fire của bạn</p>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+        <div class="bg-white rounded-lg shadow-md p-6 text-center transform hover:scale-105 transition-transform duration-200 border-l-4 border-blue-500">
+            <div class="text-2xl font-bold text-blue-600" x-text="stats.total_buffs || 0">0</div>
+            <div class="text-sm text-gray-600">Tổng số lần buff</div>
+            <div class="mt-2">
+                <svg class="w-6 h-6 mx-auto text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+            </div>
+        </div>
+        <div class="bg-white rounded-lg shadow-md p-6 text-center transform hover:scale-105 transition-transform duration-200 border-l-4 border-green-500">
+            <div class="text-2xl font-bold text-green-600" x-text="stats.successful_buffs || 0">0</div>
+            <div class="text-sm text-gray-600">Buff thành công</div>
+            <div class="mt-2">
+                <svg class="w-6 h-6 mx-auto text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M2 10.5a1.5 1.5 0 113 0v6a1.5 1.5 0 01-3 0v-6zM6 10.333v5.43a2 2 0 001.106 1.79l.05.025A4 4 0 008.943 18h5.416a2 2 0 001.962-1.608l1.2-6A2 2 0 0015.56 8H12V4a2 2 0 00-2-2 1 1 0 00-1 1v.667A4 4 0 008 8h4"></path>
+                </svg>
+            </div>
+        </div>
+        <div class="bg-white rounded-lg shadow-md p-6 text-center transform hover:scale-105 transition-transform duration-200 border-l-4 border-purple-500">
+            <div class="text-2xl font-bold text-purple-600" x-text="stats.today_buffs || 0">0</div>
+            <div class="text-sm text-gray-600">Buff hôm nay</div>
+            <div class="mt-2">
+                <svg class="w-6 h-6 mx-auto text-purple-400" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"></path>
+                </svg>
+            </div>
+        </div>
+        <div class="bg-white rounded-lg shadow-md p-6 text-center transform hover:scale-105 transition-transform duration-200 border-l-4 border-orange-500">
+            <div class="text-2xl font-bold text-orange-600" x-text="(stats.success_rate || 0) + '%'">0%</div>
+            <div class="text-sm text-gray-600">Tỷ lệ thành công</div>
+            <div class="mt-2">
+                <svg class="w-6 h-6 mx-auto text-orange-400" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                </svg>
+            </div>
+        </div>
+    </div>
+
+    <!-- Buff Form -->
+    <div class="bg-white rounded-lg shadow-lg p-8 max-w-2xl mx-auto">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6 text-center">🎯 Buff Like</h2>
+        
+        <form @submit.prevent="submitBuff()" class="space-y-6">
+            <div>
+                <label for="uid" class="block text-sm font-medium text-gray-700 mb-2">
+                    🆔 UID Free Fire
+                </label>
+                <input 
+                    type="text" 
+                    id="uid" 
+                    x-model="form.uid"
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="Nhập UID của bạn (ví dụ: 8784017287)"
+                    required
+                >
+            </div>
+            
+            <div>
+                <label for="key" class="block text-sm font-medium text-gray-700 mb-2">
+                    🔑 Key Buff
+                </label>
+                <div class="relative">
+                    <input 
+                        type="password" 
+                        id="key" 
+                        x-model="form.key"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-100"
+                        placeholder="Key đã được cấu hình sẵn"
+                        disabled
+                        value="ch9ayfa-l7away"
+                    >
+                    <div class="absolute inset-y-0 right-0 flex items-center pr-3">
+                        <svg class="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"></path>
+                        </svg>
+                    </div>
+                </div>
+                <p class="mt-1 text-xs text-gray-500">Key đã được cấu hình sẵn và không thể thay đổi</p>
+            </div>
+            
+            <div class="flex items-center justify-between">
+                <button 
+                    type="submit" 
+                    :disabled="loading"
+                    class="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white font-bold py-3 px-6 rounded-lg hover:from-blue-600 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition duration-200 transform hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl"
+                >
+                    <span x-show="!loading">🚀 Buff Like Ngay</span>
+                    <span x-show="loading" class="flex items-center justify-center">
+                        <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Đang buff...
+                    </span>
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Result -->
+    <div x-show="result" 
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0 transform scale-95"
+         x-transition:enter-end="opacity-100 transform scale-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100 transform scale-100"
+         x-transition:leave-end="opacity-0 transform scale-95"
+         class="max-w-2xl mx-auto">
+        <div x-show="result.success" class="bg-green-50 border border-green-200 rounded-lg p-6">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <svg class="h-6 w-6 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+                <div class="ml-3">
+                    <h3 class="text-lg font-medium text-green-800">✅ Buff thành công!</h3>
+                    <div class="mt-2 text-sm text-green-700">
+                        <p x-text="result.message"></p>
+                        <div class="mt-2 space-y-1">
+                            <div x-show="result.data">
+                                <template x-for="item in result.data" :key="JSON.stringify(item)">
+                                    <div class="text-xs">
+                                        <span x-text="JSON.stringify(item)"></span>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div x-show="!result.success" class="bg-red-50 border border-red-200 rounded-lg p-6">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <svg class="h-6 w-6 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                    </svg>
+                </div>
+                <div class="ml-3">
+                    <h3 class="text-lg font-medium text-red-800">❌ Buff thất bại</h3>
+                    <div class="mt-2 text-sm text-red-700">
+                        <p x-text="result.error"></p>
+                        <div class="mt-3 p-3 bg-red-100 rounded border border-red-200">
+                            <div class="flex items-center">
+                                <svg class="w-4 h-4 text-red-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="text-red-700 font-medium">Gợi ý khắc phục:</span>
+                            </div>
+                            <ul class="mt-2 text-xs text-red-600 space-y-1">
+                                <li>• Kiểm tra UID và Key có chính xác không</li>
+                                <li>• Đảm bảo kết nối internet ổn định</li>
+                                <li>• Thử lại sau vài phút nếu lỗi tạm thời</li>
+                                <li>• Kiểm tra key có hết hạn không</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Instructions -->
+    <div class="bg-blue-50 border border-blue-200 rounded-lg p-6 max-w-2xl mx-auto">
+        <h3 class="text-lg font-medium text-blue-800 mb-4">📋 Hướng dẫn sử dụng</h3>
+        <div class="text-sm text-blue-700 space-y-2">
+            <p>1. <strong>UID Free Fire:</strong> Nhập UID tài khoản Free Fire của bạn</p>
+            <p>2. <strong>Key Buff:</strong> Đã được cấu hình sẵn và hiển thị dưới dạng ẩn</p>
+            <p>3. <strong>Nhấn "Buff Like Ngay"</strong> để bắt đầu buff</p>
+            <p>4. <strong>Kiểm tra kết quả</strong> và xem lịch sử trong tab "Lịch sử"</p>
+        </div>
+    </div>
+</div>
+
+<script>
+function buffLikeApp() {
+    return {
+        form: {
+            uid: '',
+            key: 'ch9ayfa-l7away'  // Key mặc định
+        },
+        loading: false,
+        result: null,
+        stats: {},
+        
+        async init() {
+            await this.loadStats();
+        },
+        
+        async loadStats() {
+            try {
+                const response = await fetch('/api/stats');
+                this.stats = await response.json();
+            } catch (error) {
+                console.error('Error loading stats:', error);
+            }
+        },
+        
+        async submitBuff() {
+            this.loading = true;
+            this.result = null;
+            
+            try {
+                const formData = new FormData();
+                formData.append('uid', this.form.uid);
+                formData.append('key', this.form.key);
+                
+                const response = await fetch('/api/buff', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                this.result = await response.json();
+                
+                if (this.result.success) {
+                    // Reload stats after successful buff
+                    await this.loadStats();
+                }
+            } catch (error) {
+                this.result = {
+                    success: false,
+                    error: 'Lỗi kết nối: ' + error.message
+                };
+            } finally {
+                this.loading = false;
+            }
+        }
+    }
+}
+</script>
+{% endblock %} 
